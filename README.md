@@ -36,3 +36,31 @@ Usage: kocxyz [options]
 - `-h, --help`: Show help (boolean)
 
 - `-v, --version`: Show version number (boolean)
+
+## Building the Binary
+
+To build the binary, follow these steps:
+
+1. Clone the repository to your local machine:
+
+   ```shell
+   git clone https://github.com/rezzafr33/kocxyz.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```shell
+   cd kocxyz
+   ```
+
+3. Install the required dependencies:
+
+   ```shell
+   npm install
+   ```
+
+4. Build the binary:
+
+   ```shell
+   npm run build
+   ```

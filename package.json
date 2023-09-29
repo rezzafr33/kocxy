@@ -1,7 +1,8 @@
 {
   "name": "kocxyz",
   "version": "1.0.0",
-  "description": "",
+  "description": "A command-line tool for interacting with the Knockout City community servers",
+  "license": "MIT",
   "main": "app.js",
   "bin": "app.js",
   "scripts": {
