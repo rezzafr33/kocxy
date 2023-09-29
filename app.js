@@ -16,21 +16,37 @@ const rl = readline.createInterface({
 
 const validLangOptions = ['de', 'en', 'es', 'fr', 'it', 'ja', 'ko', 'pl', 'pt', 'ru', 'zh'];
 
+async function makeRequest(url, data = null, type = 'get') {
+  try {
+    if (type === 'post') {
+      const response = await axios.post(url, data);
+      return response;
+    } else if (type === 'get') {
+      const response = await axios.get(url);
+      return response;
+    } else {
+      throw new Error('Invalid request type. Use "post" or "get".');
+    }
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+}
+
 async function register(username, code) {
-  const response = await axios.post(`${API_URL}/auth/register/`, { username, code });
+  const response = await makeRequest(`${API_URL}/auth/register/`, { username, code }, 'post');
   return response;
 }
 
 async function login(code) {
   try {
-    const response = await axios.post(`${API_URL}/auth/login/`, { code });
+    const response = await makeRequest(`${API_URL}/auth/login/`, { code }, 'post');
     return response;
   } catch (error) {
     if (error.response && error.response.status === 400 && error.response.data.type === 'no_account_found') {
       console.log('User not found. Registering a new user...');
       return await doRegister(code);
     } else {
-      throw new Error(error.response.data.message);
+      throw error;
     }
   }
 }
@@ -41,27 +57,35 @@ function setLocalStorageValues(username, authToken) {
 }
 
 async function doRegister(code) {
-  const username = await askQuestion('Enter Username, note: once registered you CANNOT change the username: ');
-  const response = await register(username, code);
+  try {
+    const username = await askQuestion('Enter Username, note: once registered you CANNOT change the username: ');
+    const response = await register(username, code);
 
-  if (response.status === 200) {
-    const { username, authToken } = response.data;
-    setLocalStorageValues(username, authToken);
-    console.log(`You are registered and logged in as: ${localStorage.getItem('username')}`);
+    if (response.status === 200) {
+      const { username, authToken } = response.data;
+      setLocalStorageValues(username, authToken);
+      console.log(`You are registered and logged in as: ${localStorage.getItem('username')}`);
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
 async function doLogin() {
-  console.log(`Open the following link to login: ${API_URL}/web/discord`);
-  const code = await askQuestion('Enter Code: ');
-  const response = await login(code);
+  try {
+    console.log(`Open the following link to login: ${API_URL}/web/discord`);
+    const code = await askQuestion('Enter Code: ');
+    const response = await login(code);
 
-  if (response && response.status === 200) {
-    const { username, authToken } = response.data;
-    setLocalStorageValues(username, authToken);
-    console.log(`You are logged in as: ${localStorage.getItem('username')}`);
-  } else {
-    console.error('Login failed.');
+    if (response && response.status === 200) {
+      const { username, authToken } = response.data;
+      setLocalStorageValues(username, authToken);
+      console.log(`You are logged in as: ${localStorage.getItem('username')}`);
+    } else {
+      throw new Error('Login failed.');
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -76,18 +100,18 @@ function displayTable(jsonData) {
 
 async function getServers() {
   try {
-    const response = await axios.get(`${API_URL}/stats/servers/`);
+    const response = await makeRequest(`${API_URL}/stats/servers/`);
     const jsonData = response.data;
     displayTable(jsonData);
   } catch (error) {
-    console.error('Error:', error.message);
+    throw error;
   }
 }
 
 async function getKey(server) {
   const { username, authToken } = localStorage;
   try {
-    const response = await axios.post(`${API_URL}/auth/getkey`, { username, authToken, server });
+    const response = await makeRequest(`${API_URL}/auth/getkey`, { username, authToken, server }, 'post');
     return response.data.authkey;
   } catch (error) {
     throw error;
@@ -160,3 +184,4 @@ async function askQuestion(question) {
     rl.close();
   }
 })();
+
