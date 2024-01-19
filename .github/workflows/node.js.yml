@@ -20,18 +20,18 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
     - run: npm run build
-    - name: Archive file
-      run: chmod 755 kocxyz && tar -cvf kocxzy.tar kocxyz
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
+    - run: chmod 755 kocxyz 
+    - run: tar -cvf kocxzy.tar ./kocxyz
+    - name: Archive production artifact
+      uses: actions/upload-artifact@v4
       with:
-        name: kocxyz
+        name: dist
         path: kocxyz.tar
