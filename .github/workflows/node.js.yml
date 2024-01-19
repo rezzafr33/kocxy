@@ -29,7 +29,7 @@ jobs:
     - run: npm install
     - run: npm run build
     - run: chmod 755 kocxyz 
-    - run: tar -cvf kocxzy.tar ./kocxyz
+    - run: tar -cvf kocxyz.tar ./kocxyz
     - name: Archive production artifact
       uses: actions/upload-artifact@v4
       with:
