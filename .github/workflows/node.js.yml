@@ -28,8 +28,10 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run build
+    - name: Archive file
+      run: chmod 755 kocxyz && tar -cvf kocxzy.tar kocxyz
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: dist
-        path: kocxyz
+        name: kocxyz
+        path: kocxyz.tar
